@@ -4,11 +4,12 @@
 <h3>Employee Management</h3>
 
 <div style="max-width:900px">
-	<SfGrid DataSource="employeeData" AllowFiltering="true" AllowPaging="true" AllowGrouping="true" Toolbar="@toolbar">
+	<SfGrid DataSource="employeeData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" AllowGrouping="true" Toolbar="@toolbar">
+		<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
 		<GridPageSettings PageSize="5"></GridPageSettings>
 		<GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
 		<GridColumns>
-			<GridColumn Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
+			<GridColumn IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
 			<GridColumn HeaderText="First Name" Field="@nameof(EmployeeModel.FirstName)"></GridColumn>
 			<GridColumn HeaderText="Last Name" Field="@nameof(EmployeeModel.LastName)"></GridColumn>
 			<GridColumn HeaderText="Designation" Field="@nameof(EmployeeModel.JobTitle)" Width="100px"></GridColumn>
@@ -22,7 +23,7 @@
 @code {
 
 	private List<EmployeeModel>? employeeData = null;
-	public List<object> toolbar = new List<object> { "Search" };
+	public List<object> toolbar = new List<object> { "Add","Edit","Delete","Update","Cancel","Search" };
 
 	protected override void OnInitialized()
 	{
