@@ -7,5 +7,6 @@ namespace CampingApp.Services.Contract
 	{
 		Task<List<EmployeeModel>> GetEmployees();
 		Task<List<EmployeeJobTitle>> GetJobTitles();
+		Task<List<ReportToModel>> GetReportToEmployees();
 	}
 }
