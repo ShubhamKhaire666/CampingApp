@@ -3,8 +3,8 @@ using System;
 using CampingApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -18,46 +18,46 @@ namespace CampingApp.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("CampingApp.Entities.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmployeeJobTitleId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Gender")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("ReportToEmpId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -67,7 +67,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 1,
-                            DateOfBirth = new DateTime(1974, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1974, 2, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "bob.jones@oexl.com",
                             EmployeeJobTitleId = 1,
                             FirstName = "Bob",
@@ -78,7 +78,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 2,
-                            DateOfBirth = new DateTime(1976, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1976, 5, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "jenny.marks@oexl.com",
                             EmployeeJobTitleId = 2,
                             FirstName = "Jenny",
@@ -90,7 +90,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 3,
-                            DateOfBirth = new DateTime(1981, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1981, 5, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "henry.andrews@oexl.com",
                             EmployeeJobTitleId = 2,
                             FirstName = "Henry",
@@ -102,7 +102,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 4,
-                            DateOfBirth = new DateTime(1984, 4, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1984, 4, 17, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "john.jameson@oexl.com",
                             EmployeeJobTitleId = 2,
                             FirstName = "John",
@@ -114,7 +114,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 5,
-                            DateOfBirth = new DateTime(1993, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1993, 2, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "noah.robinson@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Noah",
@@ -126,7 +126,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 6,
-                            DateOfBirth = new DateTime(1993, 6, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1993, 6, 17, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "elijah.hamilton@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Elijah",
@@ -138,7 +138,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 7,
-                            DateOfBirth = new DateTime(1992, 7, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1992, 7, 13, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "jamie.fisher@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Jamie",
@@ -150,7 +150,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 8,
-                            DateOfBirth = new DateTime(1990, 4, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1990, 4, 17, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "olivia.mills@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Olivia",
@@ -162,7 +162,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 9,
-                            DateOfBirth = new DateTime(1993, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1993, 2, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "benjamin.lucas@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Benjamin",
@@ -174,7 +174,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 10,
-                            DateOfBirth = new DateTime(1993, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1993, 8, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "sarah.henderson@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Sarah",
@@ -186,7 +186,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 11,
-                            DateOfBirth = new DateTime(1995, 11, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1995, 11, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "emma.lee@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Emma",
@@ -198,7 +198,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 12,
-                            DateOfBirth = new DateTime(1998, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1998, 5, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "ava.williams@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Ava",
@@ -210,7 +210,7 @@ namespace CampingApp.Migrations
                         new
                         {
                             Id = 13,
-                            DateOfBirth = new DateTime(1994, 7, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateTime(1994, 7, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "angela.moore@oexl.com",
                             EmployeeJobTitleId = 3,
                             FirstName = "Angela",
@@ -225,17 +225,17 @@ namespace CampingApp.Migrations
                 {
                     b.Property<int>("EmployeeJobTitleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeJobTitleId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EmployeeJobTitleId"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("EmployeeJobTitleId");
 

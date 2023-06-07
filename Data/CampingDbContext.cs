@@ -14,7 +14,8 @@ namespace CampingApp.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			SeedData.AddEmployeeData(modelBuilder);
+			//SeedData.AddEmployeeData(modelBuilder);
+			 SeedDataPostGreSql.AddEmployeeData(modelBuilder);
 		}
 
 		public DbSet<Employee> Employees { get; set; }
