@@ -1,7 +1,9 @@
 ﻿@page "/EmployeeManagement"
+@using CampingApp.Entities;
 @using CampingApp.Models;
 @using CampingApp.Services.Contract;
 @using Syncfusion.Blazor.Grids;
+@using Syncfusion.Blazor.DropDowns;
 
 @inject IEmployeeManagementService EmployeeManagementService
 
@@ -9,11 +11,27 @@
 
 <div style="max-width:900px">
 	<SfGrid DataSource="@employeeData">
+		<GridEditSettings AllowEditing="true"></GridEditSettings>
 		<GridColumns>
 			<GridColumn IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
 			<GridColumn HeaderText="First Name" Field="@nameof(EmployeeModel.FirstName)"></GridColumn>
 			<GridColumn HeaderText="Last Name" Field="@nameof(EmployeeModel.LastName)"></GridColumn>
-			<GridColumn HeaderText="Designation" Field="@nameof(EmployeeModel.EmployeeJobTitleId)" Width="100px"></GridColumn>
+			<GridForeignColumn HeaderText="Designation" TValue="EmployeeJobTitle" 
+				Field="@nameof(EmployeeModel.EmployeeJobTitleId)"
+			ForeignDataSource="employeeJobTitleData"
+			ForeignKeyValue="Name" Width="100px">
+
+			<EditTemplate>
+				<SfDropDownList @bind.Value="@((context as EmployeeModel).EmployeeJobTitleId)" 
+				ID="EmployeeJobTitleId" DataSource="employeeJobTitleData" TItem="EmployeeJobTitle"
+				TValue="int">
+				<DropDownListFieldSettings Text="Name" Value="EmployeeJobTitleId">
+
+				</DropDownListFieldSettings>
+				</SfDropDownList>
+			</EditTemplate>
+				
+			</GridForeignColumn>
 			<GridColumn Field="@nameof(EmployeeModel.Gender)" Width="100px"></GridColumn>
 			<GridColumn HeaderText="DOB" Field="@nameof(EmployeeModel.DateOfBirth)" Format="d"></GridColumn>
 			<GridColumn HeaderText="Reports" Field="@nameof(EmployeeModel.ReportToEmpId)" Width="100px"></GridColumn>
@@ -24,11 +42,14 @@
 @code {
 
 	private List<EmployeeModel>? employeeData = null;
+	private List<EmployeeJobTitle>? employeeJobTitleData;
+
 	//public List<object> toolbar = new List<object> { "Add","Edit","Delete","Update","Cancel","Search" };
 
 	protected override async Task OnInitializedAsync()
 	{
 		employeeData = await EmployeeManagementService.GetEmployees();
+		employeeJobTitleData = await EmployeeManagementService.GetJobTitles();
 	}
 
 }

@@ -1,4 +1,5 @@
 ﻿using CampingApp.Data;
+using CampingApp.Entities;
 using CampingApp.Extensions;
 using CampingApp.Models;
 using CampingApp.Services.Contract;
@@ -19,6 +20,19 @@ namespace CampingApp.Services
 			try
 			{
 				return await _dbContext.Employees.Convert();
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task<List<EmployeeJobTitle>> GetJobTitles()
+		{
+			try
+			{
+				return await _dbContext.EmployeeJobTitles.ToListAsync();
 			}
 			catch (Exception)
 			{
