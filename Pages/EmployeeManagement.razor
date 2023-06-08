@@ -3,6 +3,7 @@
 @using CampingApp.Models;
 @using CampingApp.Services.Contract;
 @using CampingApp.Services;
+@using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Grids;
 @using Syncfusion.Blazor.DropDowns;
 @using Syncfusion.Blazor.Spinner
@@ -12,12 +13,22 @@
 <h3>Employee Management</h3>
 
 <div style="max-width:1100px">
-	<SfGrid @ref="SfEmployeeGrid" AllowPdfExport="true" AllowExcelExport="true" AllowSorting="true" DataSource="@employeeData" Toolbar="@toolbar">
-		<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+	<SfGrid @ref="SfEmployeeGrid" AllowFiltering="true"  AllowPaging="true" AllowGrouping="true" AllowPdfExport="true" AllowExcelExport="true" AllowSorting="true" DataSource="@employeeData" Toolbar="@toolbar">
+		<GridEditSettings Mode="EditMode.Dialog" AllowAdding="true" AllowEditing="true" AllowDeleting="true">
+			<HeaderTemplate>
+				<span>@(GetDialogueHeaderText(context as EmployeeModel))</span>
+			</HeaderTemplate>
+			<FooterTemplate>
+				<SfButton OnClick="@Save" IsPrimary="true">@DialogButtonCaption</SfButton>
+				<SfButton OnClick="@Cancel">Cancel</SfButton>
+			</FooterTemplate>
+		</GridEditSettings>
+		<GridPageSettings PageSize="6"></GridPageSettings>
+		<GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
 		<GridEvents OnToolbarClick="ToolbarBtnClickHandler" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeModel"></GridEvents>
 		<GridColumns>
-			<GridColumn AllowAdding="false" IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
-			<GridColumn HeaderText="Profile" Width="120px">
+			<GridColumn AllowAdding="false" AllowEditing="false" IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
+			<GridColumn AllowAdding="false" AllowEditing="false" HeaderText="Profile" Width="120px">
 				<Template>
 					@{
 						var employee = (context as EmployeeModel);
@@ -92,7 +103,7 @@ IconCss = "e-icons e-update",
 	CssClass ="e-flat"
 })">
 
-					</GridCommandColumn>	
+					</GridCommandColumn>
 					<GridCommandColumn Type="CommandButtonType.Cancel" ButtonOption="@(new CommandButtonOptions(){
 IconCss = "e-icons e-cancel-icon",
 	CssClass ="e-flat"
@@ -131,6 +142,7 @@ IconCss = "e-icons e-cancel-icon",
 		Other
 	}
 
+	private string DialogButtonCaption { get; set; }
 	private SfGrid<EmployeeModel>? SfEmployeeGrid { get; set; }
 	private bool VisibleProp { get; set; }
 	private string[] genderCollection = Enum.GetNames(typeof(GenderVal));
@@ -194,5 +206,32 @@ IconCss = "e-icons e-cancel-icon",
 		{
 			await SfEmployeeGrid?.ExportToPdfAsync();
 		}
+	}
+
+	private string GetDialogueHeaderText(EmployeeModel employeeModel)
+	{
+
+		if (employeeModel.Id == 0)
+		{
+			DialogButtonCaption = "Add";
+			return "Add Employee";
+
+		}
+		else
+		{
+			DialogButtonCaption = "Edit";
+			return $"Edit Details:{employeeModel.FirstName} {employeeModel.LastName}";
+
+		}
+
+	}
+
+	private async Task Cancel()
+	{
+		await SfEmployeeGrid.CloseEditAsync();
+	}
+	private async Task Save()
+	{
+		await SfEmployeeGrid.EndEditAsync();
 	}
 }
