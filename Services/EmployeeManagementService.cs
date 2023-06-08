@@ -15,7 +15,47 @@ namespace CampingApp.Services
         {
 			_dbContext = dbContext;
 		}
-        public async Task<List<EmployeeModel>> GetEmployees()
+
+		public async Task<Employee> AddEmployee(EmployeeModel employeeModel)
+		{
+			try
+			{
+				Employee employeeToAdd = employeeModel.Convert();
+
+				var result = await _dbContext.Employees.AddAsync(employeeToAdd);
+				await _dbContext.SaveChangesAsync();
+
+				return result.Entity;
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task DeleteEmployee(int Id)
+		{
+			try
+			{
+				Employee employeeToDelete = await _dbContext.Employees.FindAsync(Id);
+
+				if (employeeToDelete != null)
+				{
+					_dbContext.Remove(employeeToDelete);
+
+					await _dbContext.SaveChangesAsync();
+				}
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
+		public async Task<List<EmployeeModel>> GetEmployees()
 		{
 			try
 			{
@@ -64,5 +104,34 @@ namespace CampingApp.Services
 				throw;
 			}
 		}
+
+		public async Task UpdateEmployee(EmployeeModel employeeModel)
+		{
+			try
+			{
+				Employee employeeToUpdate = await _dbContext.Employees.FindAsync(employeeModel.Id);
+
+				if(employeeToUpdate != null)
+				{
+					employeeToUpdate.Email = employeeModel.Email;
+					employeeToUpdate.FirstName = employeeModel.FirstName;
+					employeeToUpdate.LastName = employeeModel.LastName;
+					employeeToUpdate.Gender = employeeModel.Gender;
+					employeeToUpdate.DateOfBirth = employeeModel.DateOfBirth;
+					employeeToUpdate.ReportToEmpId = employeeModel.ReportToEmpId;
+					employeeToUpdate.EmployeeJobTitleId = employeeModel.EmployeeJobTitleId;
+					employeeToUpdate.ImagePath = employeeModel.ImagePath;
+				
+					await _dbContext.SaveChangesAsync();
+				}
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
+
 	}
 }

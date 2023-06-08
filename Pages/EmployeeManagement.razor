@@ -2,18 +2,31 @@
 @using CampingApp.Entities;
 @using CampingApp.Models;
 @using CampingApp.Services.Contract;
+@using CampingApp.Services;
 @using Syncfusion.Blazor.Grids;
 @using Syncfusion.Blazor.DropDowns;
+@using Syncfusion.Blazor.Spinner
 
 @inject IEmployeeManagementService EmployeeManagementService
 
 <h3>Employee Management</h3>
 
-<div style="max-width:900px">
-	<SfGrid DataSource="@employeeData">
-		<GridEditSettings AllowEditing="true"></GridEditSettings>
+<div style="max-width:1100px">
+	<SfGrid @ref="SfEmployeeGrid" AllowPdfExport="true" AllowExcelExport="true" AllowSorting="true" DataSource="@employeeData" Toolbar="@toolbar">
+		<GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+		<GridEvents OnToolbarClick="ToolbarBtnClickHandler" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeModel"></GridEvents>
 		<GridColumns>
-			<GridColumn IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
+			<GridColumn AllowAdding="false" IsPrimaryKey="true" Field="@nameof(EmployeeModel.Id)" Width="50px"></GridColumn>
+			<GridColumn HeaderText="Profile" Width="120px">
+				<Template>
+					@{
+						var employee = (context as EmployeeModel);
+						<div class="profile-image-container">
+							<img src="@(employee?.ImagePath)">
+						</div>
+					}
+				</Template>
+			</GridColumn>
 			<GridColumn HeaderText="First Name" Field="@nameof(EmployeeModel.FirstName)"></GridColumn>
 			<GridColumn HeaderText="Last Name" Field="@nameof(EmployeeModel.LastName)"></GridColumn>
 			<GridForeignColumn HeaderText="Designation" TValue="EmployeeJobTitle"
@@ -39,8 +52,12 @@
 				</EditTemplate>
 
 			</GridColumn>
+			<GridColumn Field="@nameof(EmployeeModel.Email)" Width="170px">
+
+			</GridColumn>
+
 			<GridColumn HeaderText="DOB" Field="@nameof(EmployeeModel.DateOfBirth)" Format="d"></GridColumn>
-			
+
 			<GridForeignColumn HeaderText="Reports To" TValue="ReportToModel"
 							   Field="@nameof(EmployeeModel.ReportToEmpId)"
 							   ForeignDataSource="reportToEmployeeData"
@@ -56,9 +73,53 @@
 					</SfDropDownList>
 				</EditTemplate>
 			</GridForeignColumn>
+			<GridColumn HeaderText="Operations">
+				<GridCommandColumns>
+					<GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions(){
+IconCss = "e-icons e-edit",
+	CssClass ="e-flat"
+})">
+
+					</GridCommandColumn>
+					<GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions(){
+IconCss = "e-icons e-delete",
+	CssClass ="e-flat"
+})">
+
+					</GridCommandColumn>
+					<GridCommandColumn Type="CommandButtonType.Save" ButtonOption="@(new CommandButtonOptions(){
+IconCss = "e-icons e-update",
+	CssClass ="e-flat"
+})">
+
+					</GridCommandColumn>	
+					<GridCommandColumn Type="CommandButtonType.Cancel" ButtonOption="@(new CommandButtonOptions(){
+IconCss = "e-icons e-cancel-icon",
+	CssClass ="e-flat"
+})">
+
+					</GridCommandColumn>
+				</GridCommandColumns>
+			</GridColumn>
 		</GridColumns>
+		<SfSpinner @bind-Visible="@VisibleProp">
+
+		</SfSpinner>
 	</SfGrid>
 </div>
+
+<style>
+	.profile-image-container {
+		width: 80px;
+		height: 80px;
+	}
+
+		.profile-image-container img {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+		}
+</style>
 
 @code {
 
@@ -70,18 +131,68 @@
 		Other
 	}
 
+	private SfGrid<EmployeeModel>? SfEmployeeGrid { get; set; }
+	private bool VisibleProp { get; set; }
 	private string[] genderCollection = Enum.GetNames(typeof(GenderVal));
 	private List<EmployeeModel>? employeeData = null;
 	private List<EmployeeJobTitle>? employeeJobTitleData;
 	private List<ReportToModel>? reportToEmployeeData;
 
-	//public List<object> toolbar = new List<object> { "Add","Edit","Delete","Update","Cancel","Search" };
+	//public List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search", "ExcelExport", "PdfExport" };
+	public List<object> toolbar = new List<object> { "Add", "Search", "ExcelExport", "PdfExport" };
 
 	protected override async Task OnInitializedAsync()
 	{
+		VisibleProp = true;
 		employeeData = await EmployeeManagementService.GetEmployees();
 		employeeJobTitleData = await EmployeeManagementService.GetJobTitles();
 		reportToEmployeeData = await EmployeeManagementService.GetReportToEmployees();
+
+		VisibleProp = false;
 	}
 
+	public async void ActionBeginHandler(ActionEventArgs<EmployeeModel> args)
+	{
+		if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+		{
+			if (args.Action == "Add")
+			{
+				await EmployeeManagementService.AddEmployee(args.Data);
+			}
+			else if (args.Action == "Edit")
+			{
+				await EmployeeManagementService.UpdateEmployee(args.Data);
+			}
+		}
+		else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+		{
+			await EmployeeManagementService.DeleteEmployee(args.Data.Id);
+		}
+	}
+
+
+	public async void ActionCompleteHandler(ActionEventArgs<EmployeeModel> args)
+	{
+		if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+		{
+			if (args.Action == "Add")
+			{
+				employeeData = await EmployeeManagementService.GetEmployees();
+				SfEmployeeGrid?.Refresh();
+			}
+
+		}
+	}
+
+	public async void ToolbarBtnClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+	{
+		if (args.Item.Id.Contains("_excelexport"))
+		{
+			await SfEmployeeGrid?.ExportToExcelAsync();
+		}
+		else if (args.Item.Id.Contains("_pdfexport"))
+		{
+			await SfEmployeeGrid?.ExportToPdfAsync();
+		}
+	}
 }
