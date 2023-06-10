@@ -20,6 +20,9 @@ namespace CampingApp.Data
 
 		public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeJobTitle> EmployeeJobTitles { get; set; }
-
-    }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<Product> products { get; set; }
+   
+	
+	}
 }
