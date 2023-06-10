@@ -16,6 +16,7 @@ namespace CampingApp.Data
 			base.OnModelCreating(modelBuilder);
 			//SeedData.AddEmployeeData(modelBuilder);
 			 SeedDataPostGreSql.AddEmployeeData(modelBuilder);
+			 SeedDataPostGreSql.AddProductData(modelBuilder);
 		}
 
 		public DbSet<Employee> Employees { get; set; }
@@ -23,6 +24,6 @@ namespace CampingApp.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Product> products { get; set; }
    
-	
+		
 	}
 }
