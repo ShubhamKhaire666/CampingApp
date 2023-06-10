@@ -17,12 +17,15 @@ namespace CampingApp.Data
 			//SeedData.AddEmployeeData(modelBuilder);
 			 SeedDataPostGreSql.AddEmployeeData(modelBuilder);
 			 SeedDataPostGreSql.AddProductData(modelBuilder);
+			 SeedDataPostGreSql.AddClientData(modelBuilder);
 		}
 
 		public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeJobTitle> EmployeeJobTitles { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Product> products { get; set; }
+        public DbSet<RetailOutlet> RetailOutlets { get; set; }
+        public DbSet<Client> Clients { get; set; }
    
 		
 	}

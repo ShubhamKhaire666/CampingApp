@@ -56,5 +56,24 @@ namespace CampingApp.Extensions
 							   CategoryName = prodCat.Name
 						   }).ToListAsync();
 		}
+
+		public static async Task<List<ClientModel>> Convert(this IQueryable<Client> clients, CampingDbContext _dbcontext)
+		{
+			return await (from client in clients
+						  join r in _dbcontext.RetailOutlets
+						  on client.RetailOutletId equals r.Id
+						  select new ClientModel
+						  {
+							  Id = client.Id,
+							  Email = client.Email,
+							  FirstName = client.FirstName,
+							  LastName = client.LastName,
+							  JobTitle = client.JobTitle,
+							  PhoneNumber = client.PhoneNumber,
+							  RetailOutletId = client.RetailOutletId,
+							  RetailOutletName = r.Name,
+							  RetailOutletLocation = r.Location
+						  }).ToListAsync();
+		}
 	}
 }
