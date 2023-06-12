@@ -11,5 +11,8 @@ namespace CampingApp.Services.Contract
 
 		//TL
 		Task<List<GroupedFieldPriceModel>> GetGrossSalesPerTeamMemberData();
+		Task<List<GroupedFieldQtyModel>> GetQtyPerTeamMemberData();
+		Task<List<GroupedFieldQtyModel>> GetTeamQtyPerMonthData();
+
 	}
 }
