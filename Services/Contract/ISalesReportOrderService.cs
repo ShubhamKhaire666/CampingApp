@@ -5,5 +5,6 @@ namespace CampingApp.Services.Contract
 	public interface ISalesReportOrderService
 	{
 		Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData();
+		Task<List<GroupedFieldQtyModel>> GetQtyPerProductCategory();
 	}
 }

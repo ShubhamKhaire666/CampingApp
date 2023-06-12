@@ -49,5 +49,29 @@ namespace CampingApp.Services
 				throw;
 			}
 		}
+
+		public async Task<List<GroupedFieldQtyModel>> GetQtyPerProductCategory()
+		{
+
+			try
+			{
+				var reportData = await (from s in dbContext.Sales
+										group s by s.ProductCategoryName into GroupedData
+										orderby GroupedData.Key
+										select new GroupedFieldQtyModel
+										{
+											GroupedFieldKey=GroupedData.Key,
+											Qty = GroupedData.Sum(o =>o.OrderItemQty)
+										}).ToListAsync();
+
+				return reportData;
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+
+		}
 	}
 }
