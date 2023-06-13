@@ -29,6 +29,7 @@ namespace CampingApp.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<SalesOrderReport> Sales { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
    
 		
 	}

@@ -26,6 +26,7 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISalesReportOrderService, SalesOrderReportService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 var app = builder.Build();
 
