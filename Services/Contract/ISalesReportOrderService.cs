@@ -14,5 +14,11 @@ namespace CampingApp.Services.Contract
 		Task<List<GroupedFieldQtyModel>> GetQtyPerTeamMemberData();
 		Task<List<GroupedFieldQtyModel>> GetTeamQtyPerMonthData();
 
-	}
+        //SM
+        Task<List<LocationProductCategoryModel>> GetQtyLocationProductCatData();
+        Task<List<GroupedFieldQtyModel>> GetQtyPerLocationData();
+        Task<List<MonthLocationModel>> GetQtyPerMonthLocationData();
+
+
+    }
 }
