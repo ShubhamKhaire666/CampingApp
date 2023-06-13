@@ -75,5 +75,24 @@ namespace CampingApp.Extensions
 							  RetailOutletLocation = r.Location
 						  }).ToListAsync();
 		}
+	
+		public static async Task<List<OrganizationModel>> ConvertToHierarchy(this IQueryable<Employee> employees, CampingDbContext dbContext)
+		{
+			return await (from e in employees
+						  join t in dbContext.EmployeeJobTitles
+						  on e.EmployeeJobTitleId equals t.EmployeeJobTitleId
+						  orderby e.Id
+						  select new OrganizationModel
+						  {
+							  EmployeeId = e.Id.ToString(),
+							  ReportsToId = e.ReportToEmpId != null ? e.ReportToEmpId.ToString() : "",
+							  Email = e.Email,
+							  FirstName = e.FirstName,
+							  LastName = e.LastName,
+							  ImagePath = e.ImagePath,
+							  JobTitle = t.Name
+						  }).ToListAsync();
+		}
+	
 	}
 }
