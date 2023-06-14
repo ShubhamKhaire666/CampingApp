@@ -1,9 +1,11 @@
 ﻿using CampingApp.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampingApp.Data
 {
-	public class CampingDbContext:DbContext
+	public class CampingDbContext:IdentityDbContext<IdentityUser>
 	{
 
 		public CampingDbContext(DbContextOptions<CampingDbContext> options):base(options)
