@@ -1,6 +1,9 @@
 ﻿using CampingApp.Data;
+using CampingApp.Entities;
+using CampingApp.Extensions;
 using CampingApp.Models.ReportModels;
 using CampingApp.Services.Contract;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor.Grids;
 
@@ -9,19 +12,23 @@ namespace CampingApp.Services
     public class SalesOrderReportService : ISalesReportOrderService
     {
         private readonly CampingDbContext dbContext;
+        private readonly AuthenticationStateProvider authenticationStateProvider;
 
-        public SalesOrderReportService(CampingDbContext dbContext)
+		public SalesOrderReportService(CampingDbContext dbContext, AuthenticationStateProvider authenticationStateProvider)
         {
             this.dbContext = dbContext;
-        }
+			this.authenticationStateProvider = authenticationStateProvider;
+		}
 
         #region SR Sales Rep
         public async Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData()
         {
             try
             {
+                var employee = await GetLoggedOnEmployee();
+
                 var reportData = await (from s in dbContext.Sales
-                                        where s.EmployeeId == 9
+                                        where s.EmployeeId == employee.Id
                                         group s by s.OrderDateTime.Month into GroupedData
                                         orderby GroupedData.Key
                                         select new GroupedFieldPriceModel
@@ -57,8 +64,9 @@ namespace CampingApp.Services
         {
             try
             {
+                var employee = await GetLoggedOnEmployee();
                 var reportData = await (from s in dbContext.Sales
-                                        where s.EmployeeId == 9
+                                        where s.EmployeeId == employee.Id
                                         group s by s.OrderDateTime.Month into GroupedData
                                         orderby GroupedData.Key
                                         select new GroupedFieldQtyModel
@@ -94,7 +102,10 @@ namespace CampingApp.Services
 
             try
             {
-                var reportData = await (from s in dbContext.Sales
+				var employee = await GetLoggedOnEmployee();
+
+				var reportData = await (from s in dbContext.Sales
+                                        where s.EmployeeId == employee.Id
                                         group s by s.ProductCategoryName into GroupedData
                                         orderby GroupedData.Key
                                         select new GroupedFieldQtyModel
@@ -119,7 +130,9 @@ namespace CampingApp.Services
         {
             try
             {
-                List<int> teamMemberIds = await GetTeamMemberIds(3);
+				var employee = await GetLoggedOnEmployee();
+
+				List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
                 var reportData = await (from s in dbContext.Sales
                                         where teamMemberIds.Contains(s.EmployeeId)
                                         group s by s.EmployeeFirstName into groupeData
@@ -141,7 +154,9 @@ namespace CampingApp.Services
         {
             try
             {
-                List<int> teamMemberIds = await GetTeamMemberIds(3);
+				var employee = await GetLoggedOnEmployee();
+
+				List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
                 var reportData = await (from s in dbContext.Sales
                                         where teamMemberIds.Contains(s.EmployeeId)
                                         group s by s.EmployeeFirstName into groupeData
@@ -165,7 +180,8 @@ namespace CampingApp.Services
         {
             try
             {
-                List<int> teamMemberIds = await GetTeamMemberIds(3);
+				var employee = await GetLoggedOnEmployee();
+				List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
 
                 var reportData = await (from s in dbContext.Sales
                                         where teamMemberIds.Contains(s.EmployeeId)
@@ -208,6 +224,7 @@ namespace CampingApp.Services
         {
             try
             {
+
                 var reportData = await (from s in dbContext.Sales
                                         group s by s.RetailOutletLocation into groupedData
                                         orderby groupedData.Key
@@ -296,6 +313,14 @@ namespace CampingApp.Services
                 .Where(e => e.ReportToEmpId == teamLeadId)
                 .Select(e => e.Id).ToListAsync();
             return teamMemberIds;
-        }
-    }
+		}
+
+		private async Task<Employee> GetLoggedOnEmployee()
+		{
+			var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			return await user.GetEmployeeObject(dbContext);
+		}
+	}
 }

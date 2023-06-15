@@ -3,22 +3,28 @@ using CampingApp.Entities;
 using CampingApp.Extensions;
 using CampingApp.Models;
 using CampingApp.Services.Contract;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CampingApp.Services
 {
     public class AppointmentService : IAppointmentService
     {
         private readonly CampingDbContext dbContext;
+		private readonly AuthenticationStateProvider authenticationStateProvider;
 
-        public AppointmentService(CampingDbContext dbContext)
+		public AppointmentService(CampingDbContext dbContext, AuthenticationStateProvider authenticationStateProvider)
         {
             this.dbContext = dbContext;
-        }
+			this.authenticationStateProvider = authenticationStateProvider;
+		}
         public async Task AddAppointment(AppointmentModel appointmentModel)
         {
             try
             {
-                Appointment appointment = appointmentModel.Convert();
+				var employee = await GetLoggedOnEmployee();
+                appointmentModel.EmployeeId = employee.Id;
+
+				Appointment appointment = appointmentModel.Convert();
                 await dbContext.AddAsync(appointment);
                 await dbContext.SaveChangesAsync();
 
@@ -54,7 +60,8 @@ namespace CampingApp.Services
         {
             try
             {
-                return await dbContext.Appointments.Where(e=>e.EmployeeId == 9).Convert();
+                var employee = await GetLoggedOnEmployee();
+                return await dbContext.Appointments.Where(e=>e.EmployeeId == employee.Id).Convert();
             }
             catch (Exception)
             {
@@ -90,5 +97,13 @@ namespace CampingApp.Services
                 throw;
             }
         }
-    }
+
+		private async Task<Employee> GetLoggedOnEmployee()
+		{
+			var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			return await user.GetEmployeeObject(dbContext);
+		}
+	}
 }

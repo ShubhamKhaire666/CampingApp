@@ -97,7 +97,7 @@ namespace CampingApp.Extensions
         {
             return new Appointment
             {
-                EmployeeId = 9,
+                EmployeeId = appointments.Id,
                 Description = appointments.Description,
                 IsAllDay = appointments.IsAllDay,
                 RecurrenceException = appointments.RecurrenceException,
@@ -128,6 +128,14 @@ namespace CampingApp.Extensions
                               Location = a.Location,
                               Subject = a.Subject
                           }).ToListAsync();
+        }
+
+        public static async Task<Employee> GetEmployeeObject(this System.Security.Claims.ClaimsPrincipal user, CampingDbContext dbContext)
+        {
+            var emailAddress = user.Identity.Name;
+            var employee = await dbContext.Employees.Where(e => e.Email.ToLower() == emailAddress.ToLower()).SingleOrDefaultAsync();
+
+            return employee;
         }
 
     }

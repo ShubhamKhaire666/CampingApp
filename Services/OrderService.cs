@@ -1,7 +1,10 @@
 ﻿using CampingApp.Data;
 using CampingApp.Entities;
+using CampingApp.Extensions;
 using CampingApp.Models;
 using CampingApp.Services.Contract;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampingApp.Services
@@ -9,20 +12,26 @@ namespace CampingApp.Services
 	public class OrderService : IOrderService
 	{
 		private readonly CampingDbContext dbContext;
+		private readonly AuthenticationStateProvider authenticationStateProvider; 
 
-		public OrderService(CampingDbContext dbContext)
+		public OrderService(CampingDbContext dbContext, 
+			AuthenticationStateProvider authenticationStateProvider)
 		{
 			this.dbContext = dbContext;
+			this.authenticationStateProvider = authenticationStateProvider;
 		}
 		public async Task CreateOrder(OrderModel orderModel)
 		{
 			try
 			{
+
+				var employee = await GetLoggedOnEmployee();
+
 				Order order = new Order
 				{
 					OrderDateTime = DateTime.Now,
 					ClientId = orderModel.ClientID,
-					EmployeeId = 9,
+					EmployeeId = employee.Id,
 					Price = orderModel.OrderItems.Sum(o=>o.Price),
 					Qty = orderModel.OrderItems.Sum(o=>o.Qty)
 				};
@@ -93,6 +102,14 @@ namespace CampingApp.Services
 
 				throw;
 			}
+		}
+
+		private async Task<Employee> GetLoggedOnEmployee()
+		{
+			var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			return await user.GetEmployeeObject(dbContext);
 		}
 	}
 }
