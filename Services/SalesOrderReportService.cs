@@ -133,6 +133,7 @@ namespace CampingApp.Services
 				var employee = await GetLoggedOnEmployee();
 
 				List<int> teamMemberIds = await GetTeamMemberIds(employee.Id);
+
                 var reportData = await (from s in dbContext.Sales
                                         where teamMemberIds.Contains(s.EmployeeId)
                                         group s by s.EmployeeFirstName into groupeData
@@ -219,7 +220,7 @@ namespace CampingApp.Services
 
         #endregion
 
-        #region SM Senior Manager
+        #region SM Sales Manager
         public async Task<List<LocationProductCategoryModel>> GetQtyLocationProductCatData()
         {
             try
